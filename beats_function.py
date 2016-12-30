@@ -40,24 +40,24 @@ def beats_out(noveltypeaks,BPM,tempogram,featureRate):
 
     beats_output = np.zeros(len(temp_noveltypeaks))
 
-    time_0 =( 1.0/BPM[maxindex_tempogram[0]])* 60
-    print time_0
+    time_0 =( 1.0/BPM[int(maxindex_tempogram[0])])* 60
+    #print time_0
     index = int(time_0 * featureRate)
-    print index
+    #print index
 
     for n in np.arange(len(temp_noveltypeaks)):
 
         if(index == n):
             if(temp_noveltypeaks[n] == 3.75):
                 beats_output[n] = 1;
-                print '1'
+                #print '1'
                 t_peakunderconsideration = n/featureRate
                 n_peaktempo = np.floor(t_peakunderconsideration * 5)
 
                 if( n_peaktempo > np.shape(tempogram)[1] -1):
                     n_peaktempo = np.shape(tempogram)[1] -1
 
-                beattime_puc = (1.0/BPM[maxindex_tempogram[n_peaktempo]])* 60
+                beattime_puc = (1.0/BPM[int(maxindex_tempogram[int(n_peaktempo)])])* 60
                 t_next = t_peakunderconsideration + beattime_puc
 
                 if(t_next> 30):
@@ -90,6 +90,19 @@ parameterTempogram['stepsize'] = np.ceil(parameterTempogram['featureRate']/5)
 temp,freq = NoveltyCurve_to_Tempogram(noveltyC,parameterTempogram)
 peakinfo = peaklist_novelty(noveltyC)
 output = beats_out(peakinfo,freq,temp,f_rate)
+
+time_beats = np.array([])
+for i in np.arange(len(output)):
+    if(output[i] == 1):
+        time_beats = np.append(time_beats,[i/f_rate])
+#print time_beats
+out_file = open('beats.txt','w')
+for i in np.arange(len(time_beats)):
+    out_file.write("%f\n"%time_beats[i])
+    
+#out_file.write(output)
+out_file.close()
+
 """
 #print output
 plt.figure
