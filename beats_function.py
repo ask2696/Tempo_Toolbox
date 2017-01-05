@@ -6,7 +6,7 @@ from audio_to_STFT import audiotoSTFT
 import matplotlib.pyplot as plt
 import numpy.matlib
 from scipy import signal
-from master import noveltyCurve
+from audio_to_noveltyCurve import noveltyCurve
 from noveltytoTempogram import NoveltyCurve_to_Tempogram
 
 def peaklist_novelty(noveltyCurve):
@@ -24,7 +24,7 @@ def peaklist_novelty(noveltyCurve):
 
     for l in np.arange(1,size_novelty-2):
 
-        if(noveltyCurve[l] > noveltyCurve[l+1]):
+        if(noveltyCurve[l] > noveltyCurve[l+1] and noveltyCurve[l] > noveltyCurve[l-1]):
             peak_novelty[l] = 3.75
         
     return peak_novelty
@@ -76,16 +76,22 @@ def beats_out(noveltypeaks,BPM,tempogram,featureRate):
 
 
 
-    
+"""   
 (Fs,audio) = UF.wavread('./data_wav/open_004.wav');
-noveltyC,f_rate = noveltyCurve(audio,Fs)
+parameter = {};
+parameter['fs'] = Fs
+parameter['win_len'] = 1024.0 * parameter['fs'] / 22050.0
+#print parameter['win_len']
+parameter['stepsize']= 512 * parameter['fs']/22050.0
+parameter['compressionC'] = 1000
+noveltyC,f_rate = noveltyCurve(audio,Fs,parameter)
 #print len(noveltyC)
 peaks = peaklist_novelty(noveltyC)
 #print peaks
 parameterTempogram = {}
 parameterTempogram['featureRate'] = f_rate#featureRate
 parameterTempogram['tempoWindow'] = 8
-parameterTempogram['BPM'] = np.arange(30,600)
+parameterTempogram['BPM'] = np.arange(100,300)
 parameterTempogram['stepsize'] = np.ceil(parameterTempogram['featureRate']/5)
 temp,freq = NoveltyCurve_to_Tempogram(noveltyC,parameterTempogram)
 peakinfo = peaklist_novelty(noveltyC)
@@ -103,7 +109,7 @@ for i in np.arange(len(time_beats)):
 #out_file.write(output)
 out_file.close()
 
-"""
+
 #print output
 plt.figure
 #plt.plot(noveltyC)
