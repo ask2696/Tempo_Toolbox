@@ -65,15 +65,21 @@ from scipy.io.wavfile import write
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
+
 ind = 3
 RATE = 44100
 RECORD_SECONDS = 10
+
+RATE = 44100
+RECORD_SECONDS = 5
+
 
 p=pyaudio.PyAudio() # start the PyAudio class
 stream = p.open(format=FORMAT,
                 channels=CHANNELS,
                 rate=RATE,
                 input=True,
+
                 input_device_index =4,
                 frames_per_buffer=CHUNK) #uses default input device
 #stream.input_device_index =4
@@ -87,37 +93,48 @@ for i in range(0, numdevices):
             print "Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name')
 for i in range(cnt):
     print p.get_device_info_by_index(i)
+
+
+
 #frames = np.array([])
 frames1 = np.array([])
 #frames2 = np.array([])
 # create a numpy array holding a single read of audio data
-for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)): #to it a few times just to see
+for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+                
+        
+        
+        #to it a few times just to see
 
-    try:
-            data = stream.read(CHUNK)
-            print '#'
+
+        try:
+                
+                data = stream.read(CHUNK)
+                print '#'
+                    #print np.shape(data)
+        except IOError as ex:
+                print '*'           
+                if ex[1] != pyaudio.paInputOverflowed:                                      
+                        raise
+                data = '' * CHUNK
             #print np.shape(data)
-    except IOError as ex:
-            print '*'           
-            if ex[1] != pyaudio.paInputOverflowed:
-                                                          
-                    raise
-            data = '' * CHUNK
-            #print np.shape(data)
-    data = np.fromstring(data,dtype=np.int16)
-    print np.shape(data)
-    x = np.float32(data)/norm_fact[data.dtype.name]
-    #print x
-    #print np.shape(x)
+        data = np.fromstring(data,dtype=np.int16)
+        print np.shape(data)
+        x = np.float32(data)/norm_fact[data.dtype.name]
+        #print x
+        #print np.shape(x)
+
     
-    frames1 =np.append(frames1,x)
-    #x *= INT16_FAC
-    #x = np.int16(x)
-    #frames2 =np.append(frames2,x)
-    #print(data)
-    #print x
+
     
-    #frames = np.append(frames,data)
+        frames1 =np.append(frames1,x)
+        #x *= INT16_FAC
+        #x = np.int16(x)
+        #frames2 =np.append(frames2,x)
+        #print(data)
+        #print x
+    
+        #frames = np.append(frames,data)
 
 # close the stream gracefully
 stream.stop_stream()
@@ -139,6 +156,7 @@ wf.setframerate(RATE)
 wf.writeframes(frames)
 wf.close()
 """
+
 """
 try:
     data = stream.read(chunk)

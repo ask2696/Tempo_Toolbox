@@ -1,6 +1,10 @@
 import numpy as np
 from scipy.io import wavfile
+<<<<<<< HEAD
 #import utilFunctions as UF
+=======
+import utilFunctions as UF
+>>>>>>> 269df0db9c8670115b71d9d53203634e5c4407ef
 from math import *
 from audio_to_STFT import audiotoSTFT
 import matplotlib.pyplot as plt
